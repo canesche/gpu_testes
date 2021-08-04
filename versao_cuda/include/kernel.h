@@ -6,8 +6,8 @@ __global__ void simulation(float *data, int IDX_SIZE, int NUMBER_DRONES) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (idx < NUMBER_DRONES) {
-      #include "/content/declaration_variable.h"
-      #include "/content/initControlVar.h"
+      #include "declaration_variable.h"
+      #include "initControlVar.h"
       //#include "/content/rGetSensorData.h"
       
       float t;
@@ -42,14 +42,14 @@ __global__ void simulation(float *data, int IDX_SIZE, int NUMBER_DRONES) {
         //#include "/content/rGetSensorData.h"
 
         //# Controlador:
-        #include "/content/cNearHoverController.h"
+        #include "cNearHoverController.h"
 
         
         //# rSendControlSignals(&A);
-        #include "/content/rSendControlSignals.h"
+        #include "rSendControlSignals.h"
 
         //# Armazenando dados de simulação
-        #include "/content/savedata.h"
+        #include "savedata.h"
       }
     }
 }
