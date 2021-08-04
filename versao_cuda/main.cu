@@ -5,8 +5,10 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <chrono> 
 
 using namespace std;
+using namespace chrono;
 
 //#define NUMBER_DRONES 128*128
 
@@ -32,6 +34,8 @@ int main(int argc, char* argv[]) {
     float data[IDX_SIZE][29];
     float *d_data;
 
+    auto time_begin = high_resolution_clock::now();
+
     cudaMalloc((void**)&d_data, sizeof(float) * IDX_SIZE * 29);
 
     cudaMemcpy(d_data, data, sizeof(float) * IDX_SIZE * 29, cudaMemcpyHostToDevice);
@@ -46,7 +50,10 @@ int main(int argc, char* argv[]) {
 
     cudaMemcpy(data, d_data, sizeof(float) * IDX_SIZE * 29, cudaMemcpyDeviceToHost);
 
-    cout << data[0][0] << endl;
+    auto time_end = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = time_end - time_begin;
+
+    printf("%lf, ", ms_double.count()/1000.0);
     
     return 0;
 }
