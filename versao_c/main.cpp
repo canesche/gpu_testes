@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 
     //#============================================= Simulação
     int idx = tmax / A.pParTs; 
-// #    printf("\nelementos %d\n", idx);
+	// #    printf("\nelementos %d\n", idx);
     const int IDX_SIZE = idx + 2;      
     
     float data[IDX_SIZE][29];

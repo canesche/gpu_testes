@@ -34,7 +34,7 @@ static float rt_atan2(float u0, float u1){
     return y;
 }
 
-void cNearHoverController(struct ArDrone *drone){
+void cNearHoverController(ArDrone *drone){
     
     // Declaração de variáveis auxiliares:
     float Gkx1, Gkx2, Gkx3, Gkx4;

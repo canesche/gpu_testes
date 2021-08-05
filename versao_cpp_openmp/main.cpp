@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono> 
+#include <omp.h>
 
 using namespace std;
 using namespace chrono;
@@ -26,21 +27,24 @@ int main(int argc, char* argv[]) {
     clock_t tSimu;
     tSimu = clock();       // Time execution
 
+    int threads = omp_get_max_threads();
+
+    cout << threads << endl;
+
     auto time_begin = high_resolution_clock::now();
     
-    //#ArDrone A[2];  cria um vetor de 2 robôs.
-    ArDrone A; 
+    ArDrone A[threads]; 
     // # ArDrone d_A;   
 
     //#====================================== Inicalizando as Variáveis do Robô
-    initControlVar(&A);
-    initParameters(&A);
+    initControlVar(A, threads);
+    initParameters(A, threads);
 
     //#======================================== Aquisição de Dados dos Sensores
-    rGetSensorData(&A);
+    //rGetSensorData(A);
 
     //#============================================= Simulação
-    int idx = tmax / A.pParTs; 
+    int idx = tmax / A[0].pParTs; 
     // #    printf("\nelementos %d\n", idx);
     const int IDX_SIZE = idx + 2;      
     
@@ -58,48 +62,52 @@ int main(int argc, char* argv[]) {
     int cols  = sizeof(data[0])/sizeof(data[0][0]);
     //printf("\ncolunas %d\n", cols);
 
-    float *t = new float[IDX_SIZE]; // t = 0:1/30:tmax; size(t,2);
+    float *t = new float[IDX_SIZE*threads]; // t = 0:1/30:tmax; size(t,2);
 
     //printf("SIZE IDX: %d\n", IDX_SIZE);
+	
+	#pragma omp parallel for    
+    for (int k = 0; k < threads; ++k) {
+		for (int c = 0; c < IDX_SIZE; ++c) {    
+			int cc = c + k*IDX_SIZE;
+		    t[cc] = (float)(c*1.0/30);
 
-    #pragma parallel for
-    for (int c = 0; c < IDX_SIZE; ++c) {    
-        t[c] = (float)(c*1.0/30);
+		    if (t[cc] > 0.75*tmax){
+		        A[k].pPosXd[0] = 0.0;
+		        A[k].pPosXd[1] = 0.0;
+		        A[k].pPosXd[2] = 1.5;
+		        A[k].pPosXd[5] = 0.25*M_PI;
+		    } else if (t[cc] > 0.5*tmax){
+		        A[k].pPosXd[0] = -1.0;
+		        A[k].pPosXd[1] =  0.0;
+		        A[k].pPosXd[2] =  2.0;
+		        A[k].pPosXd[5] =  0.0;            
+		    } else if (t[cc] > 0.25*tmax){
+		        A[k].pPosXd[0] = 1.0;
+		        A[k].pPosXd[1] = 1.0;
+		        A[k].pPosXd[2] = 1.0;
+		        A[k].pPosXd[5] = 0.0; 
+		    } else {
+		        A[k].pPosXd[0] =  2.0;
+		        A[k].pPosXd[1] = -1.0;
+		        A[k].pPosXd[2] =  1.0;
+		        A[k].pPosXd[5] =  0.25*M_PI;            
+		    }
+		    
 
-        if (t[c] > 0.75*tmax){
-            A.pPosXd[0] = 0.0;
-            A.pPosXd[1] = 0.0;
-            A.pPosXd[2] = 1.5;
-            A.pPosXd[5] = 0.25*M_PI;
-        } else if (t[c] > 0.5*tmax){
-            A.pPosXd[0] = -1.0;
-            A.pPosXd[1] =  0.0;
-            A.pPosXd[2] =  2.0;
-            A.pPosXd[5] =  0.0;            
-        } else if (t[c] > 0.25*tmax){
-            A.pPosXd[0] = 1.0;
-            A.pPosXd[1] = 1.0;
-            A.pPosXd[2] = 1.0;
-            A.pPosXd[5] = 0.0; 
-        } else {
-            A.pPosXd[0] =  2.0;
-            A.pPosXd[1] = -1.0;
-            A.pPosXd[2] =  1.0;
-            A.pPosXd[5] =  0.25*M_PI;            
-        }
+		    //# getting robot data
+		    //rGetSensorData(&A); //# !!!tenho uma duvida sobre essa função
 
-        //# getting robot data
-        rGetSensorData(&A); //# !!!tenho uma duvida sobre essa função
-
-        //# Controlador:
-        cNearHoverController(&A);
- 
-        //# Armazenando dados de simulação
-        // XX(:,c) = [A.pPosXd; A.pPosX; A.pSCU; t];
-        saveData(data, &A, t[c], c);
-        
-        //# rSendControlSignals(&A);
-        rSendControlSignals(&A);
+		    //# Controlador:
+		    cNearHoverController(&A[k]);
+	 
+		    //# Armazenando dados de simulação
+		    // XX(:,c) = [A.pPosXd; A.pPosX; A.pSCU; t];
+		    saveData(data, &A[k], t[cc], c);
+		    
+		    //# rSendControlSignals(&A);
+		    rSendControlSignals(&A[k]);
+		}
     }
     
 
