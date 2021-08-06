@@ -2,6 +2,8 @@ nvcc main.cu
 
 BENCH=(32 64 128 192 256)
 
+nvcc -ptx main.cu -o file.ptx
+
 echo "" > res_gpu.csv
 for ((i = 0; i < ${#BENCH[@]}; i++)); do
     echo "BENCH ${BENCH[i]}x${BENCH[i]}"
