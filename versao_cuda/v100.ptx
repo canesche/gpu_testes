@@ -1,0 +1,6 @@
+ptxas info    : 40 bytes gmem, 64 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z10simulationPfii' for 'sm_70'
+ptxas info    : Function properties for _Z10simulationPfii
+    192 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 184 registers, 368 bytes cmem[0], 264 bytes cmem[2]
+
