@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     int threads = omp_get_max_threads();
 
-    cout << threads << endl;
+    cout << threads << ", ";
 
     auto time_begin = high_resolution_clock::now();
     
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
     // End of the execution
     tSimu = clock() - tSimu;
 
-    printf("%lf ", ((float)tSimu) / CLOCKS_PER_SEC);
+    printf("%lf \n", ((float)tSimu) / CLOCKS_PER_SEC);
     //printf("No. of clocks %ld clocks (%f seconds).\n", tSimu, ((float)tSimu) / CLOCKS_PER_SEC);
 
     //auto time_end = high_resolution_clock::now();
