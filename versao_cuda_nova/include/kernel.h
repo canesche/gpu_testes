@@ -1,15 +1,15 @@
 
-#include "/content/utils.h"
-#include "/content/ginv.h"
+#include "utils.h"
+#include "ginv.h"
 
 __global__ void simulation(float *data, int IDX_SIZE, float *MAPA, float *d_parametersData) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     
     if (idx < NUMBER_DRONES) {
-        #include "/content/declaration_variable.h"
-        #include "/content/initControlVar.h"
-        //#include "/content/rGetSensorData.h"
+        #include "declaration_variable.h"
+        #include "initControlVar.h"
+        //#include "rGetSensorData.h"
 
         // # Parâmetros de Entrada:
         float delay = MAPA[3*idx + 0];
@@ -67,7 +67,7 @@ __global__ void simulation(float *data, int IDX_SIZE, float *MAPA, float *d_para
 
 
             //# getting robot data
-            //#include "/content/rGetSensorData.h"
+            //#include "rGetSensorData.h"
 
 
             // % Inicio da realimentação:
@@ -93,10 +93,10 @@ __global__ void simulation(float *data, int IDX_SIZE, float *MAPA, float *d_para
             // % --
 
             //# Controlador:
-            #include "/content/cUnderActuatedControl.h"
+            #include "cUnderActuatedControl.h"
 
             //# Armazenando dados de simulação
-            #include "/content/savedata.h"
+            #include "savedata.h"
 
             // # Índices de desempenho (Atrasado & Não-atrasado)
             IAE = IAE + sqrt(pPosXtil[0]*pPosXtil[0]+pPosXtil[1]*pPosXtil[1]+pPosXtil[2]*pPosXtil[2])*pParTs;
@@ -104,7 +104,7 @@ __global__ void simulation(float *data, int IDX_SIZE, float *MAPA, float *d_para
             IASC = IASC + sqrt(pSCUd[0]*pSCUd[0]+pSCUd[1]*pSCUd[1]+pSCUd[2]*pSCUd[2]+pSCUd[3]*pSCUd[3])*pParTs;
 
             //# rSendControlSignals(&A);
-            #include "/content/rSendControlSignals.h"
+            #include "rSendControlSignals.h"
 
             
             // # =========================================================================

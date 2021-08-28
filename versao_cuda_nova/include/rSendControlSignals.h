@@ -6,7 +6,7 @@ for (int ii = 0; ii < 4; ++ii ) {
 }
 
 //# Modelo Dinamico
-#include "/content/sDynamicModel.h"
+#include "sDynamicModel.h"
 
 //# Stand-by mode
 #pragma unroll
